@@ -10,12 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class WeatherController {
@@ -34,22 +32,28 @@ public class WeatherController {
 
         LOG.info("{}: city <{}>", methodName, city);
         if (city == null) {
-            return buildFailureResponse();
+            return buildFailureResponse(HttpStatus.BAD_REQUEST, "Missing mandatory request parameter 'city'");
         }
 
         String url = Constants.WEATHER_API_URL.replace("{city}", city).replace("{appid}", Constants.APP_ID);
-        ResponseEntity<WeatherResponse> apiResponse = restTemplate.getForEntity(url, WeatherResponse.class);
+        ResponseEntity<WeatherResponse> apiResponse = null;
+        try {
+            apiResponse = restTemplate.getForEntity(url, WeatherResponse.class);
+        } catch (HttpClientErrorException.Unauthorized e) {
+            return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
+        }
+
         WeatherResponse weatherResponse = apiResponse.getBody();
         save(weatherResponse);
 
         return buildSuccessResponse(weatherResponse);
     }
 
-    private ResponseEntity<WeatherRestResponse> buildFailureResponse() {
+    private ResponseEntity<WeatherRestResponse> buildFailureResponse(HttpStatus code, String reason) {
         WeatherRestResponse response = new WeatherRestResponse();
         response.setSuccess(false);
-        response.setReason("Missing mandatory request parameter 'city'");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        response.setReason(reason);
+        return ResponseEntity.status(code).body(response);
     }
 
     private ResponseEntity<WeatherRestResponse> buildSuccessResponse(WeatherResponse weatherResponse) {
