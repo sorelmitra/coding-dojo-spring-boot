@@ -1,6 +1,6 @@
 package com.assignment.spring.rest;
 
-public class WeatherRestResponse {
+public class RestWeatherResponse {
     private String id;
     private String city;
     private String country;
