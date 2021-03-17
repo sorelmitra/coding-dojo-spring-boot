@@ -1,9 +1,16 @@
 
-package com.assignment.spring.api.model;
+package com.assignment.spring.api.response;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.assignment.spring.api.model.ApiModelClouds;
+import com.assignment.spring.api.model.ApiModelCoord;
+import com.assignment.spring.api.model.ApiModelMain;
+import com.assignment.spring.api.model.ApiModelSys;
+import com.assignment.spring.api.model.ApiModelWeather;
+import com.assignment.spring.api.model.ApiModelWind;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,26 +33,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "name",
     "cod"
 })
-public class ApiWeatherResponse {
+public class ApiResponseWeather {
 
     @JsonProperty("coord")
-    private Coord coord;
+    private ApiModelCoord apiModelCoord;
     @JsonProperty("weather")
-    private List<Weather> weather = null;
+    private List<ApiModelWeather> apiModelWeather = null;
     @JsonProperty("base")
     private String base;
     @JsonProperty("main")
-    private Main main;
+    private ApiModelMain apiModelMain;
     @JsonProperty("visibility")
     private Integer visibility;
     @JsonProperty("wind")
-    private Wind wind;
+    private ApiModelWind apiModelWind;
     @JsonProperty("clouds")
-    private Clouds clouds;
+    private ApiModelClouds apiModelClouds;
     @JsonProperty("dt")
     private Integer dt;
     @JsonProperty("sys")
-    private Sys sys;
+    private ApiModelSys apiModelSys;
     @JsonProperty("id")
     private Integer id;
     @JsonProperty("name")
@@ -56,23 +63,23 @@ public class ApiWeatherResponse {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("coord")
-    public Coord getCoord() {
-        return coord;
+    public ApiModelCoord getCoord() {
+        return apiModelCoord;
     }
 
     @JsonProperty("coord")
-    public void setCoord(Coord coord) {
-        this.coord = coord;
+    public void setCoord(ApiModelCoord apiModelCoord) {
+        this.apiModelCoord = apiModelCoord;
     }
 
     @JsonProperty("weather")
-    public List<Weather> getWeather() {
-        return weather;
+    public List<ApiModelWeather> getWeather() {
+        return apiModelWeather;
     }
 
     @JsonProperty("weather")
-    public void setWeather(List<Weather> weather) {
-        this.weather = weather;
+    public void setWeather(List<ApiModelWeather> apiModelWeather) {
+        this.apiModelWeather = apiModelWeather;
     }
 
     @JsonProperty("base")
@@ -86,13 +93,13 @@ public class ApiWeatherResponse {
     }
 
     @JsonProperty("main")
-    public Main getMain() {
-        return main;
+    public ApiModelMain getMain() {
+        return apiModelMain;
     }
 
     @JsonProperty("main")
-    public void setMain(Main main) {
-        this.main = main;
+    public void setMain(ApiModelMain apiModelMain) {
+        this.apiModelMain = apiModelMain;
     }
 
     @JsonProperty("visibility")
@@ -106,23 +113,23 @@ public class ApiWeatherResponse {
     }
 
     @JsonProperty("wind")
-    public Wind getWind() {
-        return wind;
+    public ApiModelWind getWind() {
+        return apiModelWind;
     }
 
     @JsonProperty("wind")
-    public void setWind(Wind wind) {
-        this.wind = wind;
+    public void setWind(ApiModelWind apiModelWind) {
+        this.apiModelWind = apiModelWind;
     }
 
     @JsonProperty("clouds")
-    public Clouds getClouds() {
-        return clouds;
+    public ApiModelClouds getClouds() {
+        return apiModelClouds;
     }
 
     @JsonProperty("clouds")
-    public void setClouds(Clouds clouds) {
-        this.clouds = clouds;
+    public void setClouds(ApiModelClouds apiModelClouds) {
+        this.apiModelClouds = apiModelClouds;
     }
 
     @JsonProperty("dt")
@@ -136,13 +143,13 @@ public class ApiWeatherResponse {
     }
 
     @JsonProperty("sys")
-    public Sys getSys() {
-        return sys;
+    public ApiModelSys getSys() {
+        return apiModelSys;
     }
 
     @JsonProperty("sys")
-    public void setSys(Sys sys) {
-        this.sys = sys;
+    public void setSys(ApiModelSys apiModelSys) {
+        this.apiModelSys = apiModelSys;
     }
 
     @JsonProperty("id")

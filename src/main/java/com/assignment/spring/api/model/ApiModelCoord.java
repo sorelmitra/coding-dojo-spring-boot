@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "lon",
     "lat"
 })
-public class Coord {
+public class ApiModelCoord {
 
     @JsonProperty("lon")
     private Double lon;

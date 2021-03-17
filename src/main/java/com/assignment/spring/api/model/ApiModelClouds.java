@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "all"
 })
-public class Clouds {
+public class ApiModelClouds {
 
     @JsonProperty("all")
     private Integer all;

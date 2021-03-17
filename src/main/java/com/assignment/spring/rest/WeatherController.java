@@ -3,7 +3,7 @@ package com.assignment.spring.rest;
 import com.assignment.spring.db.WeatherEntity;
 import com.assignment.spring.db.WeatherRepository;
 import com.assignment.spring.api.endpoints.ApiEndpointWeather;
-import com.assignment.spring.api.model.ApiWeatherResponse;
+import com.assignment.spring.api.response.ApiResponseWeather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,27 +42,27 @@ public class WeatherController {
 
         String url = endpointWeather.buildUrl(city);
         LOG.trace("{}: URL <{}>", methodName, url);
-        ResponseEntity<ApiWeatherResponse> apiResponse;
+        ResponseEntity<ApiResponseWeather> apiResponse;
         try {
-            apiResponse = restTemplate.getForEntity(url, ApiWeatherResponse.class);
+            apiResponse = restTemplate.getForEntity(url, ApiResponseWeather.class);
         } catch (HttpClientErrorException.Unauthorized e) {
             return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         } catch (HttpClientErrorException.NotFound e) {
             return buildFailureResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
-        ApiWeatherResponse apiWeatherResponse = apiResponse.getBody();
-        if (apiWeatherResponse == null) {
+        ApiResponseWeather apiResponseWeather = apiResponse.getBody();
+        if (apiResponseWeather == null) {
             return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, String.format("OpenWeatherMap returned empty body and status code %s", apiResponse.getStatusCode()));
         }
 
         try {
-            save(apiWeatherResponse);
+            save(apiResponseWeather);
         } catch (Exception e) {
             return buildFailureResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        return buildSuccessResponse(apiWeatherResponse);
+        return buildSuccessResponse(apiResponseWeather);
     }
 
     private ResponseEntity<RestWeatherResponse> buildFailureResponse(HttpStatus code, String reason) {
@@ -74,19 +74,19 @@ public class WeatherController {
         return ResponseEntity.status(code).body(response);
     }
 
-    private ResponseEntity<RestWeatherResponse> buildSuccessResponse(ApiWeatherResponse apiWeatherResponse) {
+    private ResponseEntity<RestWeatherResponse> buildSuccessResponse(ApiResponseWeather apiResponseWeather) {
         String methodName = "buildSuccessResponse";
         RestWeatherResponse response = new RestWeatherResponse();
         response.setSuccess(true);
         response.setReason("");
-        response.setCity(apiWeatherResponse.getName());
-        response.setCountry(apiWeatherResponse.getSys().getCountry());
-        response.setTemperature(apiWeatherResponse.getMain().getTemp());
+        response.setCity(apiResponseWeather.getName());
+        response.setCountry(apiResponseWeather.getSys().getCountry());
+        response.setTemperature(apiResponseWeather.getMain().getTemp());
         LOG.info("{}: API success for city <{}>: temp <{}>", methodName, response.getCity(), response.getTemperature());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    private WeatherEntity save(ApiWeatherResponse response) {
+    private WeatherEntity save(ApiResponseWeather response) {
         WeatherEntity entity = new WeatherEntity();
         entity.setCity(response.getName());
         entity.setCountry(response.getSys().getCountry());

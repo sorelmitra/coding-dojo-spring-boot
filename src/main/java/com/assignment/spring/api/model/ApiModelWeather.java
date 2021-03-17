@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "description",
     "icon"
 })
-public class Weather {
+public class ApiModelWeather {
 
     @JsonProperty("id")
     private Integer id;

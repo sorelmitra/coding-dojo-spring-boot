@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "temp_min",
     "temp_max"
 })
-public class Main {
+public class ApiModelMain {
 
     @JsonProperty("temp")
     private Double temp;

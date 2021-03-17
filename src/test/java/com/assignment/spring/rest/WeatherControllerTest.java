@@ -1,9 +1,9 @@
 package com.assignment.spring.rest;
 
 import com.assignment.spring.api.endpoints.ApiEndpointWeather;
-import com.assignment.spring.api.model.ApiWeatherResponse;
-import com.assignment.spring.api.model.Main;
-import com.assignment.spring.api.model.Sys;
+import com.assignment.spring.api.model.ApiModelMain;
+import com.assignment.spring.api.response.ApiResponseWeather;
+import com.assignment.spring.api.model.ApiModelSys;
 import com.assignment.spring.db.WeatherEntity;
 import com.assignment.spring.db.WeatherRepository;
 import org.junit.jupiter.api.Test;
@@ -38,9 +38,9 @@ class WeatherControllerTest {
 
     private String url = "http://baz.bum/pic?x=f&y=a b";
 
-    private Main main = new Main();
-    private Sys sys = new Sys();
-    ApiWeatherResponse apiWeatherResponse = new ApiWeatherResponse();
+    private ApiModelMain apiModelMain = new ApiModelMain();
+    private ApiModelSys apiModelSys = new ApiModelSys();
+    ApiResponseWeather apiResponseWeather = new ApiResponseWeather();
     ResponseEntity<RestWeatherResponse> responseEntity;
     RestWeatherResponse response;
 
@@ -57,7 +57,7 @@ class WeatherControllerTest {
     void testUnauthorized() {
         String city = "Unauthorized";
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
-        when(restTemplate.getForEntity(anyString(), eq(ApiWeatherResponse.class))).thenThrow(HttpClientErrorException.Unauthorized.create(HttpStatus.UNAUTHORIZED, "unauthorized", HttpHeaders.EMPTY, null, null));
+        when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenThrow(HttpClientErrorException.Unauthorized.create(HttpStatus.UNAUTHORIZED, "unauthorized", HttpHeaders.EMPTY, null, null));
         responseEntity = controller.weather(city);
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
@@ -67,7 +67,7 @@ class WeatherControllerTest {
     void testNotFound() {
         String city = "Not Found";
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
-        when(restTemplate.getForEntity(anyString(), eq(ApiWeatherResponse.class))).thenThrow(HttpClientErrorException.Unauthorized.create(HttpStatus.NOT_FOUND, "not found", HttpHeaders.EMPTY, null, null));
+        when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenThrow(HttpClientErrorException.Unauthorized.create(HttpStatus.NOT_FOUND, "not found", HttpHeaders.EMPTY, null, null));
         responseEntity = controller.weather(city);
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
@@ -77,7 +77,7 @@ class WeatherControllerTest {
     void testNullBody() {
         String city = "Null Body";
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
-        when(restTemplate.getForEntity(anyString(), eq(ApiWeatherResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(null));
+        when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(null));
         responseEntity = controller.weather(city);
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
@@ -86,13 +86,13 @@ class WeatherControllerTest {
     @Test
     void testDatabaseException() {
         String city = "Database Exception";
-        apiWeatherResponse.setName(city);
-        main.setTemp(0.0);
-        sys.setCountry("KO");
-        apiWeatherResponse.setMain(main);
-        apiWeatherResponse.setSys(sys);
+        apiResponseWeather.setName(city);
+        apiModelMain.setTemp(0.0);
+        apiModelSys.setCountry("KO");
+        apiResponseWeather.setMain(apiModelMain);
+        apiResponseWeather.setSys(apiModelSys);
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
-        when(restTemplate.getForEntity(anyString(), eq(ApiWeatherResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(apiWeatherResponse));
+        when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(apiResponseWeather));
         when(weatherRepository.save(any(WeatherEntity.class))).thenThrow(new RuntimeException("database error"));
         responseEntity = controller.weather(city);
         response = responseEntity.getBody();
@@ -102,21 +102,21 @@ class WeatherControllerTest {
     @Test
     void testSuccess() {
         String city = "Success";
-        apiWeatherResponse.setName(city);
-        main.setTemp(100.3);
-        sys.setCountry("OK");
-        apiWeatherResponse.setMain(main);
-        apiWeatherResponse.setSys(sys);
+        apiResponseWeather.setName(city);
+        apiModelMain.setTemp(100.3);
+        apiModelSys.setCountry("OK");
+        apiResponseWeather.setMain(apiModelMain);
+        apiResponseWeather.setSys(apiModelSys);
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
-        when(restTemplate.getForEntity(anyString(), eq(ApiWeatherResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(apiWeatherResponse));
+        when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(apiResponseWeather));
         when(weatherRepository.save(any(WeatherEntity.class))).thenReturn(weatherEntity);
         responseEntity = controller.weather(city);
         response = responseEntity.getBody();
         assertEquals(true, response.getSuccess());
         assertEquals("", response.getReason());
-        assertEquals(apiWeatherResponse.getName(), response.getCity());
-        assertEquals(apiWeatherResponse.getMain().getTemp(), response.getTemperature());
-        assertEquals(apiWeatherResponse.getSys().getCountry(), response.getCountry());
+        assertEquals(apiResponseWeather.getName(), response.getCity());
+        assertEquals(apiResponseWeather.getMain().getTemp(), response.getTemperature());
+        assertEquals(apiResponseWeather.getSys().getCountry(), response.getCountry());
     }
 
 }

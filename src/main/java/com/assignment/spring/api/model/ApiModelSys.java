@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "sunrise",
     "sunset"
 })
-public class Sys {
+public class ApiModelSys {
 
     @JsonProperty("type")
     private Integer type;
