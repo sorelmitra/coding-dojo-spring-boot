@@ -1,8 +1,8 @@
 package com.assignment.spring.rest;
 
-import com.assignment.spring.Constants;
 import com.assignment.spring.WeatherEntity;
 import com.assignment.spring.WeatherRepository;
+import com.assignment.spring.api.ApiEndpointWeather;
 import com.assignment.spring.api.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +20,16 @@ public class WeatherController {
 
     private static final Logger LOG = LoggerFactory.getLogger(WeatherController.class);
 
-    @Autowired
     private RestTemplate restTemplate;
+    private WeatherRepository weatherRepository;
+    private ApiEndpointWeather endpointWeather;
 
     @Autowired
-    private WeatherRepository weatherRepository;
+    public WeatherController(RestTemplate restTemplate, WeatherRepository weatherRepository, ApiEndpointWeather endpointWeather) {
+        this.restTemplate = restTemplate;
+        this.weatherRepository = weatherRepository;
+        this.endpointWeather = endpointWeather;
+    }
 
     @PostMapping("/weather")
     public ResponseEntity<WeatherRestResponse> weather(@RequestParam String city) {
@@ -35,7 +40,8 @@ public class WeatherController {
             return buildFailureResponse(HttpStatus.BAD_REQUEST, "Missing mandatory request parameter 'city'");
         }
 
-        String url = Constants.WEATHER_API_URL.replace("{city}", city).replace("{appid}", Constants.APP_ID);
+        String url = endpointWeather.buildUrl(city);
+        LOG.trace("{}: URL <{}>", methodName, url);
         ResponseEntity<WeatherResponse> apiResponse;
         try {
             apiResponse = restTemplate.getForEntity(url, WeatherResponse.class);

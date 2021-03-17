@@ -13,3 +13,13 @@ spring:
   jackson:
     serialization:
       INDENT_OUTPUT: true
+
+openWeatherMap:
+  baseUrl: http://api.openweathermap.org/data/2.5
+  weather:
+    path: weather
+    params:
+      city: q
+  appKey:
+    param: appid
+    value: X
