@@ -59,137 +59,101 @@ public class ApiResponseWeather {
     private String name;
     @JsonProperty("cod")
     private Integer cod;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("coord")
     public ApiModelCoord getCoord() {
         return apiModelCoord;
     }
 
-    @JsonProperty("coord")
     public void setCoord(ApiModelCoord apiModelCoord) {
         this.apiModelCoord = apiModelCoord;
     }
 
-    @JsonProperty("weather")
     public List<ApiModelWeather> getWeather() {
         return apiModelWeather;
     }
 
-    @JsonProperty("weather")
     public void setWeather(List<ApiModelWeather> apiModelWeather) {
         this.apiModelWeather = apiModelWeather;
     }
 
-    @JsonProperty("base")
     public String getBase() {
         return base;
     }
 
-    @JsonProperty("base")
     public void setBase(String base) {
         this.base = base;
     }
 
-    @JsonProperty("main")
     public ApiModelMain getMain() {
         return apiModelMain;
     }
 
-    @JsonProperty("main")
     public void setMain(ApiModelMain apiModelMain) {
         this.apiModelMain = apiModelMain;
     }
 
-    @JsonProperty("visibility")
     public Integer getVisibility() {
         return visibility;
     }
 
-    @JsonProperty("visibility")
     public void setVisibility(Integer visibility) {
         this.visibility = visibility;
     }
 
-    @JsonProperty("wind")
     public ApiModelWind getWind() {
         return apiModelWind;
     }
 
-    @JsonProperty("wind")
     public void setWind(ApiModelWind apiModelWind) {
         this.apiModelWind = apiModelWind;
     }
 
-    @JsonProperty("clouds")
     public ApiModelClouds getClouds() {
         return apiModelClouds;
     }
 
-    @JsonProperty("clouds")
     public void setClouds(ApiModelClouds apiModelClouds) {
         this.apiModelClouds = apiModelClouds;
     }
 
-    @JsonProperty("dt")
     public Integer getDt() {
         return dt;
     }
 
-    @JsonProperty("dt")
     public void setDt(Integer dt) {
         this.dt = dt;
     }
 
-    @JsonProperty("sys")
     public ApiModelSys getSys() {
         return apiModelSys;
     }
 
-    @JsonProperty("sys")
     public void setSys(ApiModelSys apiModelSys) {
         this.apiModelSys = apiModelSys;
     }
 
-    @JsonProperty("id")
     public Integer getId() {
         return id;
     }
 
-    @JsonProperty("id")
     public void setId(Integer id) {
         this.id = id;
     }
 
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
 
-    @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
     }
 
-    @JsonProperty("cod")
     public Integer getCod() {
         return cod;
     }
 
-    @JsonProperty("cod")
     public void setCod(Integer cod) {
         this.cod = cod;
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }
