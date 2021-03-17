@@ -36,7 +36,7 @@ public class WeatherController {
         }
 
         String url = Constants.WEATHER_API_URL.replace("{city}", city).replace("{appid}", Constants.APP_ID);
-        ResponseEntity<WeatherResponse> apiResponse = null;
+        ResponseEntity<WeatherResponse> apiResponse;
         try {
             apiResponse = restTemplate.getForEntity(url, WeatherResponse.class);
         } catch (HttpClientErrorException.Unauthorized e) {
@@ -44,6 +44,9 @@ public class WeatherController {
         }
 
         WeatherResponse weatherResponse = apiResponse.getBody();
+        if (weatherResponse == null) {
+            return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, String.format("OpenWeatherMap returned empty body and status code %s", apiResponse.getStatusCode()));
+        }
         save(weatherResponse);
 
         return buildSuccessResponse(weatherResponse);
