@@ -1,0 +1,8 @@
+{
+  "id": .*,
+  "city": "Mountain View",
+  "country": "US",
+  "temperature": .*,
+  "success" : true,
+  "reason" : ""
+}

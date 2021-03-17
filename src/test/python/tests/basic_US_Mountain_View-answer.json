@@ -1,0 +1,7 @@
+{
+  "timestamp" : "2021-03-17T11:14:13.396+00:00",
+  "status" : 500,
+  "error" : "Internal Server Error",
+  "message" : "",
+  "path" : "/weather"
+}
