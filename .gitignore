@@ -1,8 +1,12 @@
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
+
+**/src/test/python/tests/*answer.json
+**/__pycache__
 
 ### STS ###
 .apt_generated
