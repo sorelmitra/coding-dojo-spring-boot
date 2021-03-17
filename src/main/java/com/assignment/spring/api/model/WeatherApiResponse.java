@@ -1,5 +1,5 @@
 
-package com.assignment.spring.api;
+package com.assignment.spring.api.model;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "name",
     "cod"
 })
-public class WeatherResponse {
+public class WeatherApiResponse {
 
     @JsonProperty("coord")
     private Coord coord;

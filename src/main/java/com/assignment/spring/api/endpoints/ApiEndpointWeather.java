@@ -1,4 +1,4 @@
-package com.assignment.spring.api;
+package com.assignment.spring.api.endpoints;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,29 +7,29 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class ApiEndpointWeather {
-    private ApiConfig apiConfig;
+    private ApiBase apiBase;
     private String path;
     private String cityParam;
 
     @Autowired
     public ApiEndpointWeather(
-            ApiConfig apiConfig,
+            ApiBase apiBase,
             @Value("${openWeatherMap.weather.path}") String path,
             @Value("${openWeatherMap.weather.params.city}") String cityParam
     ) {
-        this.apiConfig = apiConfig;
+        this.apiBase = apiBase;
         this.path = path;
         this.cityParam = cityParam;
     }
 
     public String buildUrl(String city) {
-        return apiConfig.addKeyParam(buildPath())
+        return apiBase.addKeyParam(buildPath())
                 .queryParam(cityParam, city)
                 .build().toUriString();
     }
 
     private UriComponentsBuilder buildPath() {
-        return apiConfig.buildPath()
+        return apiBase.buildPath()
                 .pathSegment(path);
     }
 }

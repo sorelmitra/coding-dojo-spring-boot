@@ -1,5 +1,6 @@
-package com.assignment.spring;
+package com.assignment.spring.db;
 
+import com.assignment.spring.db.WeatherEntity;
 import org.springframework.data.repository.CrudRepository;
 
 public interface WeatherRepository extends CrudRepository<WeatherEntity, Integer> {

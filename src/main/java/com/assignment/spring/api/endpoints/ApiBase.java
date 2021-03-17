@@ -1,4 +1,4 @@
-package com.assignment.spring.api;
+package com.assignment.spring.api.endpoints;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
-public class ApiConfig {
+public class ApiBase {
     private String baseUrl;
     private String appKeyParam;
     private String appKey;
 
     @Autowired
-    public ApiConfig(
+    public ApiBase(
             @Value("${openWeatherMap.baseUrl}") String baseUrl,
             @Value("${openWeatherMap.appKey.param}") String appKeyParam,
             @Value("${openWeatherMap.appKey.value}") String appKey
