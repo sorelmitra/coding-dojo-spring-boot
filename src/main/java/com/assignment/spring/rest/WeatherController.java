@@ -47,6 +47,8 @@ public class WeatherController {
             apiResponse = restTemplate.getForEntity(url, WeatherResponse.class);
         } catch (HttpClientErrorException.Unauthorized e) {
             return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
+        } catch (HttpClientErrorException.NotFound e) {
+            return buildFailureResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
         WeatherResponse weatherResponse = apiResponse.getBody();
@@ -59,17 +61,21 @@ public class WeatherController {
     }
 
     private ResponseEntity<WeatherRestResponse> buildFailureResponse(HttpStatus code, String reason) {
+        String methodName = "buildFailureResponse";
         WeatherRestResponse response = new WeatherRestResponse();
         response.setSuccess(false);
         response.setReason(reason);
+        LOG.info("{}: API failure: reason <{}>", methodName, response.getCity(), response.getReason());
         return ResponseEntity.status(code).body(response);
     }
 
     private ResponseEntity<WeatherRestResponse> buildSuccessResponse(WeatherResponse weatherResponse) {
+        String methodName = "buildSuccessResponse";
         WeatherRestResponse response = new WeatherRestResponse();
         response.setCity(weatherResponse.getName());
         response.setCountry(weatherResponse.getSys().getCountry());
         response.setTemperature(weatherResponse.getMain().getTemp());
+        LOG.info("{}: API success for city <{}>: temp <{}>", methodName, response.getCity(), response.getTemperature());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
