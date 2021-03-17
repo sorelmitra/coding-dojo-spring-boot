@@ -17,6 +17,14 @@ Simple application that requests its data from [OpenWeather](https://openweather
 
 [Postgres](https://www.postgresql.org) has been chosen as it's mature, highly scalable & performant.  And we're already familiar with it, otherwise there wouldn't be a compelling reason to choose it over MySql.
 
+## Initial Configuration
+
+The database used by this app must be created separately.  To achieve this, connect to the database with admin rights and run the equivalent of this:
+
+```roomsql
+create database owmdojo;
+```
+
 ## Change Management
 
 TBD
@@ -24,8 +32,8 @@ TBD
 # TODOs
 
 1. Fix DB
-    1. Choose a suitable database
-    2. Configure DB into the app
+    1. ✅ Choose a suitable database
+    2. ✅ Configure DB into the app
     3. Organize & fix DB code
     4. Add a DB change management tool such as [Liquibase](https://www.liquibase.org)
     5. Create & apply DB Schema
@@ -33,7 +41,7 @@ TBD
     1. Add hardcoded OWM API Key
     2. Anything else?
     3. Run a request and see some results
-3. Make the current app & tests work
+3. ✅ Make the current app & tests work
 4. Add deployment and scalability
     1. Choose between Docker-Compose and Kubernetes
     2. Find a test lab
@@ -41,7 +49,7 @@ TBD
 5. Add configurability based on the deployment solution
 6. Add automated tests
     1. Unit tests
-    2. System tests - Java or Python?
+    2. ✅ System tests - Python
 7. Review 1
 
 # Resources
