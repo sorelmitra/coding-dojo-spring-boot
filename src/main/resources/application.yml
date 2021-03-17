@@ -3,7 +3,7 @@ spring:
     url: jdbc:postgresql://192.168.99.102:5432/owmdojo
     username: postgres
     password: postgres
-
     hibernate:
       ddl-auto: none
-
+  jpa:
+    open-in-view: false # Not using lazy-fetching in views right now
