@@ -25,7 +25,7 @@ public class ApiEndpointWeather {
     public String buildUrl(String city) {
         return apiConfig.addKeyParam(buildPath())
                 .queryParam(cityParam, city)
-                .toUriString();
+                .build().toUriString();
     }
 
     private UriComponentsBuilder buildPath() {
