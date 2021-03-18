@@ -13,7 +13,7 @@ Simple application that requests its data from [OpenWeather](https://openweather
 
 The database used by this app must be created separately.  To achieve this, connect to the database with admin rights and run the equivalent of this:
 
-```roomsql
+```
 create database owmdojo;
 ```
 
