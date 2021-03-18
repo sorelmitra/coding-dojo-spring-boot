@@ -1,11 +1,11 @@
 from verifit import *
 import re
 
-#server = "192.168.99.102"
-#port = 8770
+server = "192.168.99.102"
+port = 8770
 
-server = "localhost"
-port = 8080
+#server = "localhost"
+#port = 8080
 
 def test_US_Mountain_View():
 	name = "basic_US_Mountain_View"

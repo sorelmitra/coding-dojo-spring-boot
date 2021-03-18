@@ -15,6 +15,7 @@
     <description>Spring Boot Coding Dojo</description>
 
     <properties>
+        <docker.image.name>sorelmitra/owm-dojo</docker.image.name>
         <java.version>11</java.version>
     </properties>
 
@@ -74,6 +75,85 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Resources copying -->
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <!-- Docker resources with filtering -->
+                <executions>
+                    <execution>
+                        <id>prepare-dockerfile</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <!-- Apply Maven properties expansion
+                                        to the Dockerfile -->
+                                    <directory>src/main/docker</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}/docker-tmp</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Docker -->
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.34.1</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <!-- creates an docker-image based on the Dockerfile -->
+                    <images>
+                        <image>
+                            <!-- define the image name and version -->
+                            <!-- %l: If the project version ends with -SNAPSHOT
+                                then this placeholder is latest, otherwise its the full version -->
+                            <name>${docker.image.name}:%l</name>
+                            <alias>${docker.image.name}</alias>
+                            <build>
+                                <cleanup>try</cleanup>
+                                <dockerFile>Dockerfile</dockerFile>
+                                <!-- we need to use this directory as we
+                                    have the Dockerfile being filtered and copied there by the maven-resources-plugin
+                                    plugin -->
+                                <dockerFileDir>${project.build.directory}/docker-tmp</dockerFileDir>
+
+                                <!-- copies local jar into the docker-plugin
+                                    "build-maven" directory -->
+                                <!-- path: ${project.basedir}/target/docker/xxx-image/build/maven/ -->
+                                <assembly>
+                                    <inline>
+                                        <id>copy-generated-jar-file</id>
+                                        <files>
+                                            <file>
+                                                <source>
+                                                    ${project.build.directory}/${project.artifactId}-${project.version}.jar
+                                                </source>
+                                                <outputDirectory>./</outputDirectory>
+                                                <destName>
+                                                    ${project.artifactId}-${project.version}.jar
+                                                </destName>
+                                            </file>
+                                        </files>
+                                    </inline>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                    <!-- define the file to save the builded image -->
+                    <saveFile>${project.build.directory}/${docker.image.name}-docker-image.tar.gz</saveFile>
+                </configuration>
             </plugin>
 
         </plugins>
