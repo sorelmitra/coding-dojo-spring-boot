@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-schema-owm
+      author: Sorel
+      changes:
+        - sql: CREATE SCHEMA owm;
+  - changeSet:
+      id: create-table-owm-weather
+      author: Sorel
+      changes:
+        - createTable:
+            schemaName: owm
+            tableName: weather
+            remarks: Table for holding weather information as dragged from the OWM api.
+            columns:
+              - column:
+                  name: id
+                  remarks: ID of the weather entry. Auto-generated internally in the component.
+                  type: BIGINT
+                  constraints:
+                      nullable: false
+                      unique: true
+              - column:
+                  name: city
+                  remarks: City as reported by OWM.
+                  type: VARCHAR
+                  constraints:
+                      nullable: false
+              - column:
+                  name: country
+                  remarks: Country as reported by OWM.
+                  type: VARCHAR
+                  constraints:
+                      nullable: false
+              - column:
+                  name: temperature
+                  remarks: Temperature as reported by OWM.
+                  type: DOUBLE
+                  constraints:
+                      nullable: false
+        - addPrimaryKey:
+            schemaName: owm
+            tableName: weather
+            columnNames: id
+            constraintName: pk_weather
+            validate: true
+        - createSequence:
+            sequenceName: hibernate_sequence
+            dataType: int
+            startValue: 1
+            incrementBy: 1
+            cycle: true
+            maxValue: 10000
+            minValue: 1

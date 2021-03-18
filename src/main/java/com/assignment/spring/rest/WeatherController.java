@@ -59,6 +59,7 @@ public class WeatherController {
         try {
             save(apiResponseWeather);
         } catch (Exception e) {
+            LOG.trace("ERROR while accessing database", e);
             return buildFailureResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
