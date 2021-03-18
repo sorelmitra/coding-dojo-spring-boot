@@ -56,6 +56,18 @@ To run autotests for this app, install [Verifit](https://github.com/sorelmitra/l
 pytest .
 ```
 
+## Run Stress Tests
+
+For stress testing I used [K6](https://k6.io).  The test reads a city list downloaded from OWM, takes one country, and at each iteration gets the weather for one city in the list without doubling the cities.
+
+To run it:
+
+```shell
+K6_VUS=1 K6_ITERATIONS=10 k6 run --include-system-env-vars src/test/k6/weather-test.js
+```
+
+Although K6 supports various ways of passing in parameters, `VUs` and `ITERATIONs` must be passed via environment variables as the test script relies on them to do its job.
+
 
 
 # Architecture
@@ -87,10 +99,10 @@ TBD
 2. ✅ Make OWM API work
 3. ✅ Make the current app & tests work
 4. ✅ Add configurability based on application properties file
-5. Add automated tests
+5. ✅ Add automated tests
    1. ✅ Unit tests
    2. ✅ Autotests - Python
-   3. Stress Testing - K6
+   3. ✅ Stress Testing - K6
 6. Add multi-threading
 7. Add deployment and scalability
     1. Choose between Docker-Compose and Kubernetes
