@@ -85,6 +85,11 @@ public class WeatherController {
         apiModelSys.setCountry("US");
         apiResponseWeather.setMain(apiModelMain);
         apiResponseWeather.setSys(apiModelSys);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(apiResponseWeather);
     }
 
@@ -116,7 +121,7 @@ public class WeatherController {
         Iterator<WeatherEntity> it = existingEntities.iterator();
         while (it.hasNext()) {
             WeatherEntity existingEntity = it.next();
-            if (existingEntity.getCity() == response.getName()) {
+            if (existingEntity.getCity().equals(response.getName())) {
                 existingEntity.setTemperature(response.getMain().getTemp());
                 entity = existingEntity;
                 break;
