@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 @RestController
 public class WeatherController {
@@ -37,41 +38,44 @@ public class WeatherController {
     }
 
     @PostMapping("/weather")
-    public ResponseEntity<RestWeatherResponse> weather(@RequestParam String city, @RequestParam(defaultValue = "false") boolean fake) {
-        String methodName = "weather";
+    public Callable<ResponseEntity<RestWeatherResponse>> weather(@RequestParam String city, @RequestParam(defaultValue = "false") boolean fake) {
+        Callable<ResponseEntity<RestWeatherResponse>> task = () -> {
+            String methodName = "weather";
 
-        LOG.info("{}: city <{}>", methodName, city);
-        if (city == null) {
-            return buildFailureResponse(HttpStatus.BAD_REQUEST, "Missing mandatory request parameter 'city'");
-        }
-
-        ResponseEntity<ApiResponseWeather> apiResponse;
-        if (fake) {
-            apiResponse = buildFakeApiResponse(city);
-        } else {
-            String url = endpointWeather.buildUrl(city);
-            LOG.trace("{}: URL <{}>", methodName, url);
-            try {
-                apiResponse = restTemplate.getForEntity(url, ApiResponseWeather.class);
-            } catch (HttpClientErrorException.Unauthorized e) {
-                return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
-            } catch (HttpClientErrorException.NotFound e) {
-                return buildFailureResponse(HttpStatus.NOT_FOUND, e.getMessage());
+            LOG.info("{}: city <{}>", methodName, city);
+            if (city == null) {
+                return buildFailureResponse(HttpStatus.BAD_REQUEST, "Missing mandatory request parameter 'city'");
             }
-        }
 
-        ApiResponseWeather apiResponseWeather = apiResponse.getBody();
-        if (apiResponseWeather == null) {
-            return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, String.format("OpenWeatherMap returned empty body and status code %s", apiResponse.getStatusCode()));
-        }
+            ResponseEntity<ApiResponseWeather> apiResponse;
+            if (fake) {
+                apiResponse = buildFakeApiResponse(city);
+            } else {
+                String url = endpointWeather.buildUrl(city);
+                LOG.trace("{}: URL <{}>", methodName, url);
+                try {
+                    apiResponse = restTemplate.getForEntity(url, ApiResponseWeather.class);
+                } catch (HttpClientErrorException.Unauthorized e) {
+                    return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
+                } catch (HttpClientErrorException.NotFound e) {
+                    return buildFailureResponse(HttpStatus.NOT_FOUND, e.getMessage());
+                }
+            }
 
-        try {
-            WeatherEntity weatherEntity = save(apiResponseWeather);
-            return buildSuccessResponse(weatherEntity);
-        } catch (Exception e) {
-            LOG.trace("ERROR while accessing database", e);
-            return buildFailureResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+            ApiResponseWeather apiResponseWeather = apiResponse.getBody();
+            if (apiResponseWeather == null) {
+                return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, String.format("OpenWeatherMap returned empty body and status code %s", apiResponse.getStatusCode()));
+            }
+
+            try {
+                WeatherEntity weatherEntity = save(apiResponseWeather);
+                return buildSuccessResponse(weatherEntity);
+            } catch (Exception e) {
+                LOG.trace("ERROR while accessing database", e);
+                return buildFailureResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+        };
+        return task;
     }
 
     private ResponseEntity<ApiResponseWeather> buildFakeApiResponse(String city) {
