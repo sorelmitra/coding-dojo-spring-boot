@@ -57,13 +57,12 @@ public class WeatherController {
         }
 
         try {
-            save(apiResponseWeather);
+            WeatherEntity weatherEntity = save(apiResponseWeather);
+            return buildSuccessResponse(weatherEntity);
         } catch (Exception e) {
             LOG.trace("ERROR while accessing database", e);
             return buildFailureResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
-        return buildSuccessResponse(apiResponseWeather);
     }
 
     private ResponseEntity<RestWeatherResponse> buildFailureResponse(HttpStatus code, String reason) {
@@ -75,23 +74,35 @@ public class WeatherController {
         return ResponseEntity.status(code).body(response);
     }
 
-    private ResponseEntity<RestWeatherResponse> buildSuccessResponse(ApiResponseWeather apiResponseWeather) {
+    private ResponseEntity<RestWeatherResponse> buildSuccessResponse(WeatherEntity weatherEntity) {
         String methodName = "buildSuccessResponse";
         RestWeatherResponse response = new RestWeatherResponse();
         response.setSuccess(true);
         response.setReason("");
-        response.setCity(apiResponseWeather.getName());
-        response.setCountry(apiResponseWeather.getSys().getCountry());
-        response.setTemperature(apiResponseWeather.getMain().getTemp());
+        response.setCity(weatherEntity.getCity());
+        response.setCountry(weatherEntity.getCountry());
+        response.setTemperature(weatherEntity.getTemperature());
         LOG.info("{}: API success for city <{}>: temp <{}>", methodName, response.getCity(), response.getTemperature());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     private WeatherEntity save(ApiResponseWeather response) {
+        Iterable<WeatherEntity> existingEntities = weatherRepository.findByCountryAndCity(response.getSys().getCountry(), response.getName());
+        WeatherEntity entity;
+        if (existingEntities.iterator().hasNext()) {
+            entity = existingEntities.iterator().next();
+            entity.setTemperature(response.getMain().getTemp());
+        } else {
+            entity = createWeatherEntity(response);
+        }
+        return weatherRepository.save(entity);
+    }
+
+    private WeatherEntity createWeatherEntity(ApiResponseWeather response) {
         WeatherEntity entity = new WeatherEntity();
         entity.setCity(response.getName());
         entity.setCountry(response.getSys().getCountry());
         entity.setTemperature(response.getMain().getTemp());
-        return weatherRepository.save(entity);
+        return entity;
     }
 }

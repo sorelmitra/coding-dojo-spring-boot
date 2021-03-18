@@ -10,12 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -102,14 +107,54 @@ class WeatherControllerTest {
     @Test
     void testSuccess() {
         String city = "Success";
+        String country = "OK";
         apiResponseWeather.setName(city);
         apiModelMain.setTemp(100.3);
-        apiModelSys.setCountry("OK");
+        apiModelSys.setCountry(country);
         apiResponseWeather.setMain(apiModelMain);
         apiResponseWeather.setSys(apiModelSys);
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
         when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(apiResponseWeather));
-        when(weatherRepository.save(any(WeatherEntity.class))).thenReturn(weatherEntity);
+        when(weatherRepository.save(any(WeatherEntity.class))).thenAnswer(new Answer<WeatherEntity>() {
+            @Override
+            public WeatherEntity answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (WeatherEntity) args[0];
+            }
+        });
+        responseEntity = controller.weather(city);
+        response = responseEntity.getBody();
+        assertEquals(true, response.getSuccess());
+        assertEquals("", response.getReason());
+        assertEquals(apiResponseWeather.getName(), response.getCity());
+        assertEquals(apiResponseWeather.getMain().getTemp(), response.getTemperature());
+        assertEquals(apiResponseWeather.getSys().getCountry(), response.getCountry());
+    }
+
+    @Test
+    void testExistingEntity() {
+        String city = "Existing Entity";
+        String country = "OK";
+        apiResponseWeather.setName(city);
+        apiModelMain.setTemp(100.3);
+        apiModelSys.setCountry(country);
+        apiResponseWeather.setMain(apiModelMain);
+        apiResponseWeather.setSys(apiModelSys);
+        when(endpointWeather.buildUrl(anyString())).thenReturn(url);
+        when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(apiResponseWeather));
+        List<WeatherEntity> existingEntities = new LinkedList<>();
+        existingEntities.add(weatherEntity);
+        weatherEntity.setCity(city);
+        weatherEntity.setCountry(country);
+        weatherEntity.setTemperature(253.2);
+        when(weatherRepository.findByCountryAndCity(anyString(), anyString())).thenReturn(existingEntities);
+        when(weatherRepository.save(any(WeatherEntity.class))).thenAnswer(new Answer<WeatherEntity>() {
+            @Override
+            public WeatherEntity answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (WeatherEntity) args[0];
+            }
+        });
         responseEntity = controller.weather(city);
         response = responseEntity.getBody();
         assertEquals(true, response.getSuccess());
