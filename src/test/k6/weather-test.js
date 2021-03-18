@@ -38,7 +38,7 @@ export default function weather(data) {
 	let city = data.cityNames[data.index];
 	//console.log(`VU ${__VU}, index ${data.index}, city ${city}`);
 
-	let url = `http://${data.server}:${data.port}/${data.path}?city=${encodeURIComponent(city)}`;
+	let url = `http://${data.server}:${data.port}/${data.path}?city=${encodeURIComponent(city)}&fake=true`;
 	let expectedStatus = 200;
 	let r = http.post(url);
 	if (r.status != expectedStatus) {
