@@ -68,6 +68,34 @@ K6_VUS=1 K6_ITERATIONS=10 k6 run --include-system-env-vars src/test/k6/weather-t
 
 Although K6 supports various ways of passing in parameters, `VUs` and `ITERATIONs` must be passed via environment variables as the test script relies on them to do its job.
 
+## Build
+
+To build everything as a Docker container:
+
+```shell
+mvn clean install docker:build docker:push
+```
+
+## Deploy
+
+### Plain Docker
+
+There's a `docker-compose` file which can be used to deploy and start the basic Docker container.  To use it:
+
+```shell
+OPENWEATHERMAP_APPKEY_VALUE=your-key-value docker-compose -f src/test/python/app/app-with-prerequisites.yml up
+```
+
+It will start both the database and the app while passing the api key via a Spring Boot environment property, which in this case is `OPENWEATHERMAP_APPKEY_VALUE`, which is the _upper-case-united-with-underscores_ transformation of `openWeatherMap.appKey.value` (Spring Boot magic).
+
+To operate on individual containers:
+
+```shell
+OPENWEATHERMAP_APPKEY_VALUE=your-key-value docker-compose -f src/test/python/app/app-with-prerequisites.yml up -d owm-dojo
+
+docker-compose -f src/test/python/app/app-with-prerequisites.yml stop owm-dojo
+docker container prune -f
+```
 
 
 # Architecture
@@ -98,6 +126,10 @@ I have 3 types of automated tests:
 2. System testing.  Used to check app functionality in a real environment.
 3. Stress testing.  Used to check app behavior under stress conditions, including large data sets and concurrent access.
 
+## Deployment
+
+At a very basic level, the app is deployed using a Docker container.
+
 
 
 # TODOs
@@ -115,7 +147,7 @@ I have 3 types of automated tests:
    1. ✅ Unit tests
    2. ✅ Autotests - Python
    3. ✅ Stress Testing - K6
-6. Add multi-threading
+6. ✅ Add multi-threading
 7. Add deployment and scalability
     1. Choose between Docker-Compose and Kubernetes
     2. Find a test lab
@@ -145,3 +177,8 @@ I have 3 types of automated tests:
 
 - [5] [Liquibase vs Flyway](https://medium.com/@ruxijitianu/database-version-control-liquibase-versus-flyway-9872d43ee5a4)
 - [6] [Flyway vs Liquibase](https://dzone.com/articles/flyway-vs-liquibase)
+
+## Docker Configuration
+
+- [7] [Using Environment Vars in Compose](https://docs.docker.com/compose/environment-variables/#the-env-file)
+- [8] [Exposing Env Vars from Kubernetes](https://dzone.com/articles/configuring-java-apps-with-kubernetes-configmaps-a)
