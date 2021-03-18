@@ -72,19 +72,31 @@ Although K6 supports various ways of passing in parameters, `VUs` and `ITERATION
 
 # Architecture
 
+## Overview
+
+This is a single microservice that obtains weather info from OWM and saves it in a local DB for later reference.
+
 ## Application Configuration
 
 [Application Properties](https://docs.spring.io/spring-boot/docs/1.0.1.RELEASE/reference/html/boot-features-external-config.html) and its variants have been chosen as they allow easy configuration from within Spring Boot itself, as well as Docker containers or Kubernetes.  As opposed to Environment variables, which works within Kubernetes as well, but is more cumbersome to use and implement.
 
 ## Database
 
-## Engine
+### Engine
 
 [Postgres](https://www.postgresql.org) has been chosen as it's mature, highly scalable & performant.  And we're already familiar with it, otherwise there wouldn't be a compelling reason to choose it over MySql.
 
-## Change Management
+### Change Management
 
-TBD
+I used [Liquibase](https://www.liquibase.org/get-started/how-liquibase-works) as it's a de facto standard for managing change in databases.  There are other options, but I'm used to Liquibase and found no compelling reason to switch.
+
+## Automated Tests
+
+I have 3 types of automated tests:
+
+1. Unit testing.  Used to check code functionality.
+2. System testing.  Used to check app functionality in a real environment.
+3. Stress testing.  Used to check app behavior under stress conditions, including large data sets and concurrent access.
 
 
 
@@ -133,4 +145,3 @@ TBD
 
 - [5] [Liquibase vs Flyway](https://medium.com/@ruxijitianu/database-version-control-liquibase-versus-flyway-9872d43ee5a4)
 - [6] [Flyway vs Liquibase](https://dzone.com/articles/flyway-vs-liquibase)
-- [7] [Liquibase](https://www.liquibase.org/get-started/how-liquibase-works)
