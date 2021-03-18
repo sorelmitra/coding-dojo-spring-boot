@@ -78,25 +78,25 @@ TBD
 
 # TODOs
 
-1. Fix DB
+1. ✅ Fix DB
     1. ✅ Choose a suitable database
     2. ✅ Configure DB into the app
-    3. Organize & fix DB code
-    4. Add a DB change management tool such as [Liquibase](https://www.liquibase.org)
-    5. Create & apply DB Schema
+    3. ✅ Organize & fix DB code
+    4. ✅ Add a DB change management tool - Liquibase
+    5. ✅ Create & apply DB Schema
 2. ✅ Make OWM API work
 3. ✅ Make the current app & tests work
-4. Add deployment and scalability
+4. ✅ Add configurability based on application properties file
+5. Add automated tests
+   1. ✅ Unit tests
+   2. ✅ Autotests - Python
+   3. Stress Testing - K6
+6. Add multi-threading
+7. Add deployment and scalability
     1. Choose between Docker-Compose and Kubernetes
     2. Find a test lab
     3. Apply solution
-5. Add multi-threading
-6. Add HA
-7. ✅ Add configurability based on application properties file
-8. ✅ Add automated tests
-    1. ✅ Unit tests
-    2. ✅ Autotests - Python
-    3. Stress Testing - K6
+8. Add HA
 9. Review 1
 10. Complete Architecture and Usage sections
 
