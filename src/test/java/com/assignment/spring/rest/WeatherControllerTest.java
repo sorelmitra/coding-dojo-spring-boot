@@ -53,7 +53,7 @@ class WeatherControllerTest {
 
     @Test
     void testNoCity() throws Exception {
-        responseEntity = controller.weather(null, false).call();
+        responseEntity = controller.weather(null, -1).call();
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
     }
@@ -63,7 +63,7 @@ class WeatherControllerTest {
         String city = "Unauthorized";
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
         when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenThrow(HttpClientErrorException.Unauthorized.create(HttpStatus.UNAUTHORIZED, "unauthorized", HttpHeaders.EMPTY, null, null));
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
     }
@@ -73,7 +73,7 @@ class WeatherControllerTest {
         String city = "Not Found";
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
         when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenThrow(HttpClientErrorException.Unauthorized.create(HttpStatus.NOT_FOUND, "not found", HttpHeaders.EMPTY, null, null));
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
     }
@@ -83,7 +83,7 @@ class WeatherControllerTest {
         String city = "Null Body";
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
         when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(null));
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
     }
@@ -99,7 +99,7 @@ class WeatherControllerTest {
         when(endpointWeather.buildUrl(anyString())).thenReturn(url);
         when(restTemplate.getForEntity(anyString(), eq(ApiResponseWeather.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).body(apiResponseWeather));
         when(weatherRepository.save(any(WeatherEntity.class))).thenThrow(new RuntimeException("database error"));
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(false, response.getSuccess());
     }
@@ -122,7 +122,7 @@ class WeatherControllerTest {
                 return (WeatherEntity) args[0];
             }
         });
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(true, response.getSuccess());
         assertEquals("", response.getReason());
@@ -141,7 +141,7 @@ class WeatherControllerTest {
                 return (WeatherEntity) args[0];
             }
         });
-        responseEntity = controller.weather(city, true).call();
+        responseEntity = controller.weather(city, 0).call();
         response = responseEntity.getBody();
         assertEquals(true, response.getSuccess());
         assertEquals("", response.getReason());
@@ -174,7 +174,7 @@ class WeatherControllerTest {
                 return (WeatherEntity) args[0];
             }
         });
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(true, response.getSuccess());
         assertEquals("", response.getReason());
@@ -207,7 +207,7 @@ class WeatherControllerTest {
                 return (WeatherEntity) args[0];
             }
         });
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(true, response.getSuccess());
         assertEquals("", response.getReason());
@@ -246,7 +246,7 @@ class WeatherControllerTest {
                 return (WeatherEntity) args[0];
             }
         });
-        responseEntity = controller.weather(city, false).call();
+        responseEntity = controller.weather(city, -1).call();
         response = responseEntity.getBody();
         assertEquals(true, response.getSuccess());
         assertEquals("", response.getReason());

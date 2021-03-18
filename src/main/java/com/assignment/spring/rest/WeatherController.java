@@ -38,7 +38,7 @@ public class WeatherController {
     }
 
     @PostMapping("/weather")
-    public Callable<ResponseEntity<RestWeatherResponse>> weather(@RequestParam String city, @RequestParam(defaultValue = "false") boolean fake) {
+    public Callable<ResponseEntity<RestWeatherResponse>> weather(@RequestParam String city, @RequestParam(defaultValue = "-1") Integer fake) {
         Callable<ResponseEntity<RestWeatherResponse>> task = () -> {
             String methodName = "weather";
 
@@ -48,8 +48,8 @@ public class WeatherController {
             }
 
             ResponseEntity<ApiResponseWeather> apiResponse;
-            if (fake) {
-                apiResponse = buildFakeApiResponse(city);
+            if (fake > -1) {
+                apiResponse = buildFakeApiResponse(city, fake);
             } else {
                 String url = endpointWeather.buildUrl(city);
                 LOG.trace("{}: URL <{}>", methodName, url);
@@ -78,7 +78,7 @@ public class WeatherController {
         return task;
     }
 
-    private ResponseEntity<ApiResponseWeather> buildFakeApiResponse(String city) {
+    private ResponseEntity<ApiResponseWeather> buildFakeApiResponse(String city, Integer fake) {
         ApiResponseWeather apiResponseWeather = new ApiResponseWeather();
         apiResponseWeather.setName(city);
         ApiModelMain apiModelMain = new ApiModelMain();
@@ -89,10 +89,12 @@ public class WeatherController {
         apiModelSys.setCountry("US");
         apiResponseWeather.setMain(apiModelMain);
         apiResponseWeather.setSys(apiModelSys);
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (fake > 0) {
+            try {
+                Thread.sleep(fake);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return ResponseEntity.status(HttpStatus.OK).body(apiResponseWeather);
     }
