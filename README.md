@@ -149,9 +149,8 @@ At a very basic level, the app is deployed using a Docker container.
    3. ✅ Stress Testing - K6
 6. ✅ Add multi-threading
 7. Add deployment and scalability
-    1. Choose between Docker-Compose and Kubernetes
-    2. Find a test lab
-    3. Apply solution
+    1. ✅ Dockerize the app
+    2. Add Kubernetes
 8. Add HA
 9. Review 1
 10. Complete Architecture and Usage sections
