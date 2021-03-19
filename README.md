@@ -9,17 +9,19 @@ Simple application that requests its data from [OpenWeather](https://openweather
 
 # Usage
 
-## Initial Configuration
+## Run in Local Environment
+
+### Initial Configuration
 
 The database used by this app must be created separately.  To achieve this, connect to the database with admin rights and run the equivalent of this:
 
-```
+```shell
 create database owmdojo;
 ```
 
 The app should work with major SQL DB engines available today.  The only one tested was Postgres.
 
-## Run App Locally
+### Run App Locally
 
 To run the app in your local environment, you need to first create a file like this:
 
@@ -44,30 +46,6 @@ Then add the following parameter to the application (not to Java itself) when ru
 
 This will overwrite just the `appKey` value from the app configuration, as well as the DB URL and user.  You can add other values in your local file if you desire, take a look at `src/main/resources/application.yaml` for more values to config.
 
-## Run Autotests
-
-Autotests are automatic system tests, in which the app is running in a real environment, and a separate tester app is making requests to it.
-
-In this case the tester app is based on [PyTest](https://docs.pytest.org/en/latest/) and on a helper Python module that I developed and is available [here](https://github.com/sorelmitra/learn/tree/master/verifit).  The module helps with writing quick tests of the form _prepare input data_ ➡ _call something_ ➡ _obtain a file with results_ ➡ _compare the obtained file with an expected one_.  It provides boilerplate code for easy specifying of the input and expected output, as well as for running arbitrary Shell commands.
-
-To run autotests for this app, install [Verifit](https://github.com/sorelmitra/learn/tree/master/verifit) in your Python path and then CD to the root of the source tree for this app and run:
-
-```shell
-pytest .
-```
-
-## Run Stress Tests
-
-For stress testing I used [K6](https://k6.io).  The test reads a city list downloaded from OWM, takes one country, and at each iteration gets the weather for one city in the list without doubling the cities.
-
-To run it:
-
-```shell
-K6_VUS=1 K6_ITERATIONS=10 k6 run --include-system-env-vars src/test/k6/weather-test.js
-```
-
-Although K6 supports various ways of passing in parameters, `VUs` and `ITERATIONs` must be passed via environment variables as the test script relies on them to do its job.
-
 ## Build
 
 To build everything as a Docker container:
@@ -76,9 +54,91 @@ To build everything as a Docker container:
 mvn clean install docker:build docker:push
 ```
 
-## Deploy
+## Run in Kubernetes
 
-### Plain Docker
+### Configure
+
+To install or upgrade the release, make sure you have [Helm 3](https://helm.sh) installed
+
+**Note for GKE**: This has been configured for Google Kubernetes Engine, because that's what I had available, not because I like the way it's documented or organized!
+
+Then cd to the root of the repo and run:
+
+```shell
+kubectl create -f src/main/kube/postgres-storage.yaml
+```
+
+This will create a PVC for the postgres database the microservice is using.
+
+**For GKE**: Now change the reclaim policy to retain...
+
+```shell
+kubectl get pv
+
+kubectl patch pv <pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+```
+
+**Note for GKE**: in order to make the services work externally, you have to open up a firewall rule!  Like this:
+
+```shell
+# For the app
+gcloud compute firewall-rules create owm-dojo-node-port --allow tcp:30770
+
+# For postgres
+gcloud compute firewall-rules create test-node-port --allow tcp:node-port
+```
+
+See [the guide](https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps) for more details.  And also watch how they say nothing about it [in the docs](https://cloud.google.com/kubernetes-engine/docs/concepts/service)!
+
+### Create the Database
+
+Now connect to Postgres and create the database.  Because you've changed the retain policy for the PV above, the database will be retained until you actually kill the PV.
+
+To do this, first take note of a node's External IP (doesn't matter which node):
+
+```shell
+kubectl get nodes --output wide
+```
+
+Then use that IP to connect to Postgres:
+
+```shell
+psql -h <Node External IP> -p 30432 -U postgres --password
+```
+
+And create your database:
+
+```shell
+create database owmdojo;
+```
+
+### Install the Release
+
+To install the microservice, first make sure you have your OWM Api Key available then type:
+
+```shell
+helm upgrade --install owm-dojo src/main/helm --set owm.apiKey=<your api key>
+```
+
+### Access the Service
+
+The same as [Create the Database](#Create_the_Database) above, get a node's External IP then say:
+
+```shell
+curl -X POST http://<Node External IP>:30770/weather?city=X
+```
+
+### Delete the Release
+
+To delete the release:
+
+```shell
+helm delete owm-dojo
+```
+
+## Run as Docker Containers
+
+Kubernetes of course is preferred, as it offers HA and scalability if configured properly.  However if you want to use plain Docker:
 
 There's a `docker-compose` file which can be used to deploy and start the basic Docker container.  To use it:
 
@@ -96,6 +156,38 @@ OPENWEATHERMAP_APPKEY_VALUE=your-key-value docker-compose -f src/test/python/app
 docker-compose -f src/test/python/app/app-with-prerequisites.yml stop owm-dojo
 docker container prune -f
 ```
+
+## Run Autotests
+
+Autotests are automatic system tests, in which the app is running in a real environment, and a separate tester app is making requests to it.
+
+In this case the tester app is based on [PyTest](https://docs.pytest.org/en/latest/) and on a helper Python module that I developed and is available [here](https://github.com/sorelmitra/learn/tree/master/verifit).  The module helps with writing quick tests of the form _prepare input data_ ➡ _call something_ ➡ _obtain a file with results_ ➡ _compare the obtained file with an expected one_.  It provides boilerplate code for easy specifying of the input and expected output, as well as for running arbitrary Shell commands.
+
+To run autotests for this app, first install [Verifit](https://github.com/sorelmitra/learn/tree/master/verifit) in your Python path.
+
+Then edit `src/test/python/tests/test_basic.py` and make it point to the running instance of the app by changing the `server` and `port` variables.
+
+Finally CD to the root of the source tree for this app and run:
+
+```shell
+pytest .
+```
+
+
+## Run Stress Tests
+
+For stress testing I used [K6](https://k6.io).  The test reads a city list downloaded from OWM, takes one country, and at each iteration gets the weather for one city in the list without doubling the cities.
+
+To run it, first edit `src/test/k6/weather-test.js` and point it to the running instance of the app  by changing the `server` and `port` variables.
+
+Then CD to the root of the repo and run:
+
+```shell
+K6_VUS=1 K6_ITERATIONS=10 k6 run --include-system-env-vars src/test/k6/weather-test.js
+```
+
+Although K6 supports various ways of passing in parameters, `VUs` and `ITERATIONs` must be passed via environment variables as the test script relies on them to do its job.
+
 
 
 # Architecture
