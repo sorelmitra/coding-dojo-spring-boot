@@ -5,6 +5,6 @@ metadata:
   labels:
     app: postgres
 data:
-  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/owmdojo
+  SPRING_DATASOURCE_URL: jdbc:postgresql://owm-dojo-postgres:5432/owmdojo
   OPENWEATHERMAP_APPKEY_VALUE: {{ .Values.owm.apiKey }}
 

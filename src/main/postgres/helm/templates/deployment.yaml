@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "owm-dojo.fullname" . }}
+  name: {{ include "postgres.fullname" . }}
   labels:
-    {{- include "owm-dojo.labels" . | nindent 4 }}
+    {{- include "postgres.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ template "owm-dojo.fullname" . }}
+  serviceName: {{ template "postgres.fullname" . }}
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
 {{- end }}
   selector:
     matchLabels:
-      {{- include "owm-dojo.selectorLabels" . | nindent 6 }}
+      {{- include "postgres.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -19,30 +19,36 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "owm-dojo.selectorLabels" . | nindent 8 }}
+        {{- include "postgres.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "owm-dojo.serviceAccountName" . }}
+      serviceAccountName: {{ include "postgres.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.container.port }}
-              protocol: TCP
+            - containerPort: {{ .Values.container.port }}
           envFrom:
             - configMapRef:
-                name: owm-dojo-config
+                name: postgres-config-env
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: postgres-data-volume
+              mountPath: {{ .Values.container.dataPath }}
+              subPath: {{ .Values.container.dataSubPath }}  # For GKE, see https://stackoverflow.com/questions/60235623/how-to-have-data-persist-in-gke-kubernetes-statefulset-with-postgres
+      volumes:
+        - name: postgres-data-volume
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

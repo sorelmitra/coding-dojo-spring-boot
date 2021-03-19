@@ -1,21 +1,18 @@
-# Default values for owm-dojo.
+# Default values for postgres.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: gcr.io/sorelm/owm-dojo
+  repository: postgres
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "10"
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-owm:
-  apiKey: X
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -39,13 +36,17 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-container:
-  port: 8080
-
 service:
   type: NodePort
-  port: 8080
-  nodePort: 30770
+  port: 5432
+  nodePort: 30432
+
+container:
+  port: 5432
+  configPath: /opt/postgres/conf
+  configFile: postgresql.conf
+  dataPath: /var/lib/postgresql/data
+  dataSubPath: data
 
 ingress:
   enabled: false
