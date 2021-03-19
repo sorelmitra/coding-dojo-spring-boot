@@ -106,7 +106,10 @@ This is a single microservice that obtains weather info from OWM and saves it in
 
 ## Application Configuration
 
-[Application Properties](https://docs.spring.io/spring-boot/docs/1.0.1.RELEASE/reference/html/boot-features-external-config.html) and its variants have been chosen as they allow easy configuration from within Spring Boot itself, as well as Docker containers or Kubernetes.  As opposed to Environment variables, which works within Kubernetes as well, but is more cumbersome to use and implement.
+The application is configured via its `application.yaml`.  As SpringBoot has different [ways](https://docs.spring.io/spring-boot/docs/1.0.1.RELEASE/reference/html/boot-features-external-config.html) to override those values, this is flexible enough to offer the options of:
+
+- Loading an external yaml file that only overrides certain values
+- Defining environment variables that are magically transformed by SpringBoot into properties based on a convention
 
 ## Database
 
@@ -148,12 +151,11 @@ At a very basic level, the app is deployed using a Docker container.
    2. ✅ Autotests - Python
    3. ✅ Stress Testing - K6
 6. ✅ Add multi-threading
-7. Add deployment and scalability
+7. Add deployment, scalability, and HA
     1. ✅ Dockerize the app
     2. Add Kubernetes
-8. Add HA
-9. Review 1
-10. Complete Architecture and Usage sections
+8. Review 1
+9. Complete Architecture and Usage sections
 
 
 
