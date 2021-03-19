@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: owm-dojo-config
+  labels:
+    app: postgres
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/owmdojo
+  OPENWEATHERMAP_APPKEY_VALUE: {{ .Values.owm.apiKey }}
+

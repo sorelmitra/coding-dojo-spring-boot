@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.postgres.name }}
+  labels:
+    {{- include "owm-dojo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.postgres.service.type }}
+  ports:
+    - port: {{ .Values.postgres.service.port }}
+      targetPort: {{ .Values.postgres.container.port }}
+      protocol: TCP
+      nodePort: {{ .Values.postgres.service.nodePort }}
+  selector:
+    {{- include "owm-dojo.selectorLabels" . | nindent 4 }}

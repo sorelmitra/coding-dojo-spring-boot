@@ -1,0 +1,31 @@
+# For GKE we have to let the Engine create the PVC automatically
+# For this to work we need to remove storageClassName and use ReadWriteOnce
+# https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes
+
+#kind: PersistentVolume
+#apiVersion: v1
+#metadata:
+#  name: postgres-pv-volume
+#  labels:
+#    type: local
+#spec:
+#  storageClassName: manual
+#  capacity:
+#    storage: 1Gi
+#  accessModes:
+#    - ReadWriteMany
+#  hostPath:
+#    path: "/mnt/data"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pv-claim
+spec:
+#  storageClassName: manual
+  accessModes:
+#    - ReadWriteMany   # Don't use on GKE
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

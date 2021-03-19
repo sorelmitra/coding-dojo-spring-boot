@@ -1,0 +1,24 @@
+# Note for GKE: in order to make this service work externally, you have to open up a firewall rule!
+#
+# Like this:
+#  gcloud compute firewall-rules create test-node-port --allow tcp:node-port
+# https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps
+#
+# Oh, and by the way, their "Service" docs say nothing about this!
+# https://cloud.google.com/kubernetes-engine/docs/concepts/service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "owm-dojo.fullname" . }}
+  labels:
+    {{- include "owm-dojo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.container.port }}
+      protocol: TCP
+      nodePort: {{ .Values.service.nodePort }}
+  selector:
+    {{- include "owm-dojo.selectorLabels" . | nindent 4 }}
