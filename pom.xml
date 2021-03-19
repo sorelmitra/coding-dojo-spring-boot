@@ -15,7 +15,7 @@
     <description>Spring Boot Coding Dojo</description>
 
     <properties>
-        <docker.image.name>sorelmitra/owm-dojo</docker.image.name>
+        <docker.image.name>gcr.io/sorelm/owm-dojo</docker.image.name>
         <java.version>11</java.version>
     </properties>
 

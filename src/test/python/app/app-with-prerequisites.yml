@@ -29,7 +29,7 @@ services:
   owm-dojo:
     depends_on:
       - postgresql
-    image: sorelmitra/owm-dojo:latest
+    image: gcr.io/sorelm/owm-dojo:latest
     container_name: owm-dojo
     environment:
       - OPENWEATHERMAP_APPKEY_VALUE
