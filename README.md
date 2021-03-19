@@ -65,7 +65,7 @@ To install or upgrade the release, make sure you have [Helm 3](https://helm.sh) 
 Then cd to the root of the repo and run:
 
 ```shell
-kubectl create -f src/main/kube/postgres-storage.yaml
+kubectl create -f src/main/postgres/kube/postgres-storage.yaml
 ```
 
 This will create a PVC for the postgres database the microservice is using.
@@ -85,10 +85,18 @@ kubectl patch pv <pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"
 gcloud compute firewall-rules create owm-dojo-node-port --allow tcp:30770
 
 # For postgres
-gcloud compute firewall-rules create test-node-port --allow tcp:node-port
+gcloud compute firewall-rules create postgres-node-port --allow tcp:30432
 ```
 
 See [the guide](https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps) for more details.  And also watch how they say nothing about it [in the docs](https://cloud.google.com/kubernetes-engine/docs/concepts/service)!
+
+### Install Postgres
+
+CD to the root of the source repo and run this:
+
+```shell
+helm upgrade --install owm-dojo-postgres src/main/postgres/helm
+```
 
 ### Create the Database
 
@@ -134,6 +142,14 @@ To delete the release:
 
 ```shell
 helm delete owm-dojo
+```
+
+### Delete Postgres
+
+Run this:
+
+```shell
+helm delete owm-dojo-postgres
 ```
 
 ## Run as Docker Containers
@@ -243,11 +259,11 @@ At a very basic level, the app is deployed using a Docker container.
    2. ✅ Autotests - Python
    3. ✅ Stress Testing - K6
 6. ✅ Add multi-threading
-7. Add deployment, scalability, and HA
+7. ✅ Add deployment, scalability, and HA
     1. ✅ Dockerize the app
-    2. Add Kubernetes
-8. Review 1
-9. Complete Architecture and Usage sections
+    2. ✅ Add Kubernetes
+8. Complete Architecture and Usage sections
+9. Review
 
 
 
