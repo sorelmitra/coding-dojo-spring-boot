@@ -7,8 +7,8 @@ const cityList = JSON.parse(open('./city.list.json'));
 
 export function setup() {
 	let data = {
-		server: "192.168.99.102",
-		port: 8770,
+		server: "34.116.216.26",
+		port: 30770,
 		path: "weather",
 		cityNames: null,
 		countVus: parseInt(defaultOrEnv(0, "K6_VUS")),
