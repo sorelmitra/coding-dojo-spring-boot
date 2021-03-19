@@ -202,6 +202,8 @@ Then CD to the root of the repo and run:
 K6_VUS=1 K6_ITERATIONS=10 k6 run --include-system-env-vars src/test/k6/weather-test.js
 ```
 
+The more `K6_VUS` you pass, the more requests will be done in parallel.  `K6_ITERATIONS` must be at least as big as `K6_VUS` and if bigger, the iterations are split evenly among the VUs.
+
 Although K6 supports various ways of passing in parameters, `VUs` and `ITERATIONs` must be passed via environment variables as the test script relies on them to do its job.
 
 
@@ -212,12 +214,21 @@ Although K6 supports various ways of passing in parameters, `VUs` and `ITERATION
 
 This is a single microservice that obtains weather info from OWM and saves it in a local DB for later reference.
 
+## Quality Assurance
+
+QA has been obtained by a combination of **automated** tests:
+
+- Unit tests that exercise the code and are ran as part of each build.
+- System tests that exercise the entire app running in a real environment and check the values obtained after calling the app.
+- Stress tests that put load and stress performance of the app while also doing some basic checks on the values returned, including large data sets and concurrent access.
+
 ## Application Configuration
 
 The application is configured via its `application.yaml`.  As SpringBoot has different [ways](https://docs.spring.io/spring-boot/docs/1.0.1.RELEASE/reference/html/boot-features-external-config.html) to override those values, this is flexible enough to offer the options of:
 
-- Loading an external yaml file that only overrides certain values
-- Defining environment variables that are magically transformed by SpringBoot into properties based on a convention
+- Loading an external yaml file that only overrides certain values.  This works well when running locally.
+- Defining environment variables that are magically transformed by SpringBoot into properties based on a convention.  This works well with Docker and Kubernetes.
+
 
 ## Database
 
@@ -229,18 +240,21 @@ The application is configured via its `application.yaml`.  As SpringBoot has dif
 
 I used [Liquibase](https://www.liquibase.org/get-started/how-liquibase-works) as it's a de facto standard for managing change in databases.  There are other options, but I'm used to Liquibase and found no compelling reason to switch.
 
-## Automated Tests
-
-I have 3 types of automated tests:
-
-1. Unit testing.  Used to check code functionality.
-2. System testing.  Used to check app functionality in a real environment.
-3. Stress testing.  Used to check app behavior under stress conditions, including large data sets and concurrent access.
-
 ## Deployment
 
 At a very basic level, the app is deployed using a Docker container.
 
+For more advanced usage, Kubernetes is preferred.
+
+## Scalability, HA, and Performance
+
+Internally, the app makes use of Spring's async mode which uses a thread pool to serve requests.  This means a single instance of the app can serve multiple requests simultaneously.
+
+The app also supports multiple parallel instances, as long as requests are load-balanced such as no single request reaches more than one instance.
+
+In Kubernetes, basic load balancing is automatically provided.  Scalability is supported both manually and automatically, with the first one being configured by default in this app.
+
+High availability is offered by a combination of Kubernetes and multiple clusters, but this is out of scope of this project and involves configuration on the Kubernetes Engine provider.
 
 
 # TODOs
@@ -256,14 +270,13 @@ At a very basic level, the app is deployed using a Docker container.
 4. ✅ Add configurability based on application properties file
 5. ✅ Add automated tests
    1. ✅ Unit tests
-   2. ✅ Autotests - Python
+   2. ✅ System tests - Python
    3. ✅ Stress Testing - K6
 6. ✅ Add multi-threading
 7. ✅ Add deployment, scalability, and HA
     1. ✅ Dockerize the app
     2. ✅ Add Kubernetes
-8. Complete Architecture and Usage sections
-9. Review
+8. ✅ Complete Architecture and Usage sections
 
 
 
