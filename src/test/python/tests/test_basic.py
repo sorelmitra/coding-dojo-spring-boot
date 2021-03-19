@@ -1,8 +1,11 @@
 from verifit import *
 import re
 
-server = "192.168.99.102"
-port = 8770
+server = "34.116.216.26"
+port = 30770
+
+# server = "192.168.99.102"
+# port = 8770
 
 #server = "localhost"
 #port = 8080
