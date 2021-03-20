@@ -277,6 +277,9 @@ High availability is offered by a combination of Kubernetes and multiple cluster
     1. ✅ Dockerize the app
     2. ✅ Add Kubernetes
 8. ✅ Complete Architecture and Usage sections
+9. Data handling 
+    1. ✅ Store city ID in the DB, as just country and city name are not enough to uniquely identify a place
+    2. Handle Hibernate errors like "trying to update a record that has changed in the meantime"
 
 
 
