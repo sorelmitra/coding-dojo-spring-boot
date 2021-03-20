@@ -2,6 +2,7 @@ package com.assignment.spring.rest;
 
 public class RestWeatherResponse {
     private Long id;
+    private Long cityId;
     private String city;
     private String country;
     private Double temperature;
@@ -14,6 +15,14 @@ public class RestWeatherResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
     }
 
     public String getCity() {

@@ -1,9 +1,7 @@
 
 package com.assignment.spring.api.response;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.assignment.spring.api.model.ApiModelClouds;
 import com.assignment.spring.api.model.ApiModelCoord;
@@ -11,9 +9,6 @@ import com.assignment.spring.api.model.ApiModelMain;
 import com.assignment.spring.api.model.ApiModelSys;
 import com.assignment.spring.api.model.ApiModelWeather;
 import com.assignment.spring.api.model.ApiModelWind;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -54,7 +49,7 @@ public class ApiResponseWeather {
     @JsonProperty("sys")
     private ApiModelSys apiModelSys;
     @JsonProperty("id")
-    private Integer id;
+    private Long id;
     @JsonProperty("name")
     private String name;
     @JsonProperty("cod")
@@ -132,11 +127,11 @@ public class ApiResponseWeather {
         this.apiModelSys = apiModelSys;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

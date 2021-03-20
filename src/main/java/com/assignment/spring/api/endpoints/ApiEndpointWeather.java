@@ -10,21 +10,23 @@ public class ApiEndpointWeather {
     private ApiBase apiBase;
     private String path;
     private String cityParam;
+    private String cityIdParam;
 
     @Autowired
     public ApiEndpointWeather(
             ApiBase apiBase,
             @Value("${openWeatherMap.weather.path}") String path,
-            @Value("${openWeatherMap.weather.params.city}") String cityParam
-    ) {
+            @Value("${openWeatherMap.weather.params.city}") String cityParam,
+            @Value("${openWeatherMap.weather.params.cityId}") String cityIdParam) {
         this.apiBase = apiBase;
         this.path = path;
         this.cityParam = cityParam;
+        this.cityIdParam = cityIdParam;
     }
 
-    public String buildUrl(String city) {
+    public String buildUrl(Long cityId) {
         return apiBase.addKeyParam(buildPath())
-                .queryParam(cityParam, city)
+                .queryParam(cityIdParam, cityId)
                 .build().toUriString();
     }
 

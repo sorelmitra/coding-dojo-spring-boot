@@ -1,5 +1,6 @@
 {
   "id" : .*,
+  "cityId" : 4122986,
   "city" : "Mountain View",
   "country" : "US",
   "temperature" : .*,

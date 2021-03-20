@@ -16,21 +16,17 @@ class ApiEndpointWeatherTest {
     private ApiBase apiBase = new ApiBase(baseUrl, appKeyParam, appKey);
 
     private String path = "foo";
-    private String cityParam = "x";
+    private String cityParam = "y";
+    private String cityIdParam = "x";
 
-    private ApiEndpointWeather endpointWeather = new ApiEndpointWeather(apiBase, path, cityParam);
+    private ApiEndpointWeather endpointWeather = new ApiEndpointWeather(apiBase, path, cityIdParam, cityIdParam);
 
     @Test void buildUrlBasic() {
-        String city = "Denomination";
-        assertEquals(expectedUri(city), endpointWeather.buildUrl(city));
+        Long cityId = 4853497593L;
+        assertEquals(expectedUri(cityId), endpointWeather.buildUrl(cityId));
     }
 
-    @Test void buildUrlWithSpaces() {
-        String city = "Has some spaces";
-        assertEquals(expectedUri(city), endpointWeather.buildUrl(city));
-    }
-
-    private String expectedUri(String city) {
-        return String.format("%s/%s?%s=%s&%s=%s", baseUrl, path, appKeyParam, appKey, cityParam, city);
+    private String expectedUri(Long cityId) {
+        return String.format("%s/%s?%s=%s&%s=%s", baseUrl, path, appKeyParam, appKey, cityIdParam, cityId);
     }
 }

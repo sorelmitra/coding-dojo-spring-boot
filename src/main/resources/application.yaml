@@ -20,6 +20,7 @@ openWeatherMap:
     path: weather
     params:
       city: q
+      cityId: id
   appKey:
     param: appid
     value: X

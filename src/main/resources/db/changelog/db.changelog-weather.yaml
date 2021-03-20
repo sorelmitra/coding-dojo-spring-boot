@@ -21,11 +21,17 @@ databaseChangeLog:
                       nullable: false
                       unique: true
               - column:
-                  name: city
-                  remarks: City as reported by OWM.
-                  type: VARCHAR
-                  constraints:
-                      nullable: false
+                    name: city_id
+                    remarks: City ID as reported by OWM.
+                    type: BIGINT
+                    constraints:
+                        nullable: false
+              - column:
+                    name: city
+                    remarks: City as reported by OWM.
+                    type: VARCHAR
+                    constraints:
+                        nullable: false
               - column:
                   name: country
                   remarks: Country as reported by OWM.

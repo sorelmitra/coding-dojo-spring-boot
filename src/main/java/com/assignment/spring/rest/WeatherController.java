@@ -38,7 +38,7 @@ public class WeatherController {
     }
 
     @PostMapping("/weather")
-    public Callable<ResponseEntity<RestWeatherResponse>> weather(@RequestParam String city, @RequestParam(defaultValue = "-1") Integer fake) {
+    public Callable<ResponseEntity<RestWeatherResponse>> weather(@RequestParam Long cityId, @RequestParam(defaultValue = "") String city, @RequestParam(defaultValue = "-1") Integer fake) {
         Callable<ResponseEntity<RestWeatherResponse>> task = () -> {
             String methodName = "weather";
 
@@ -49,9 +49,9 @@ public class WeatherController {
 
             ResponseEntity<ApiResponseWeather> apiResponse;
             if (fake > -1) {
-                apiResponse = buildFakeApiResponse(city, fake);
+                apiResponse = buildFakeApiResponse(cityId, city, fake);
             } else {
-                String url = endpointWeather.buildUrl(city);
+                String url = endpointWeather.buildUrl(cityId);
                 LOG.trace("{}: URL <{}>", methodName, url);
                 try {
                     apiResponse = restTemplate.getForEntity(url, ApiResponseWeather.class);
@@ -67,6 +67,10 @@ public class WeatherController {
                 return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, String.format("OpenWeatherMap returned empty body and status code %s", apiResponse.getStatusCode()));
             }
 
+            if (apiResponseWeather.getId().longValue() != cityId.longValue()) {
+                return buildFailureResponse(HttpStatus.SERVICE_UNAVAILABLE, String.format("OpenWeatherMap returned a different Id %d than requested %d", apiResponseWeather.getId(), cityId));
+            }
+
             try {
                 WeatherEntity weatherEntity = save(apiResponseWeather);
                 return buildSuccessResponse(weatherEntity);
@@ -78,8 +82,9 @@ public class WeatherController {
         return task;
     }
 
-    private ResponseEntity<ApiResponseWeather> buildFakeApiResponse(String city, Integer fake) {
+    private ResponseEntity<ApiResponseWeather> buildFakeApiResponse(Long cityId, String city, Integer fake) {
         ApiResponseWeather apiResponseWeather = new ApiResponseWeather();
+        apiResponseWeather.setId(cityId);
         apiResponseWeather.setName(city);
         ApiModelMain apiModelMain = new ApiModelMain();
         Random random = new Random();
@@ -114,6 +119,7 @@ public class WeatherController {
         response.setSuccess(true);
         response.setReason("");
         response.setId(weatherEntity.getId());
+        response.setCityId(weatherEntity.getCityId());
         response.setCity(weatherEntity.getCity());
         response.setCountry(weatherEntity.getCountry());
         response.setTemperature(weatherEntity.getTemperature());
@@ -122,12 +128,12 @@ public class WeatherController {
     }
 
     private WeatherEntity save(ApiResponseWeather response) {
-        Iterable<WeatherEntity> existingEntities = weatherRepository.findByCountryAndCity(response.getSys().getCountry(), response.getName());
+        Iterable<WeatherEntity> existingEntities = weatherRepository.findByCityId(response.getId());
         WeatherEntity entity = null;
         Iterator<WeatherEntity> it = existingEntities.iterator();
         while (it.hasNext()) {
             WeatherEntity existingEntity = it.next();
-            if (existingEntity.getCity().equals(response.getName())) {
+            if (existingEntity.getCityId().longValue() == response.getId().longValue()) {
                 existingEntity.setTemperature(response.getMain().getTemp());
                 entity = existingEntity;
                 break;
@@ -141,6 +147,7 @@ public class WeatherController {
 
     private WeatherEntity createWeatherEntity(ApiResponseWeather response) {
         WeatherEntity entity = new WeatherEntity();
+        entity.setCityId(response.getId());
         entity.setCity(response.getName());
         entity.setCountry(response.getSys().getCountry());
         entity.setTemperature(response.getMain().getTemp());

@@ -12,6 +12,8 @@ public class WeatherEntity {
 
     private String city;
 
+    private Long cityId;
+
     private String country;
 
     private Double temperature;
@@ -47,4 +49,13 @@ public class WeatherEntity {
     public void setTemperature(Double temperature) {
         this.temperature = temperature;
     }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
+
 }

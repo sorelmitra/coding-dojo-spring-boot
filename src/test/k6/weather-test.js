@@ -9,8 +9,12 @@ export function setup() {
 	let data = {
 		server: "34.116.216.26",
 		port: 30770,
+//		server: "192.168.99.102",
+//		port: 8770,
+//		server: "localhost",
+//		port: 8080,
 		path: "weather",
-		cityNames: null,
+		cities: null,
 		countVus: parseInt(defaultOrEnv(0, "K6_VUS")),
 		index: 0,
 	};
@@ -18,9 +22,9 @@ export function setup() {
 		console.log("ERROR: Please specify the exact number of VUs in the 'K6_VUS' variable!");
 		return data;
 	}
-	data.cityNames = getCities(cityList, "US");
-	//console.log(data.cityNames);
-	console.log(`Endpoint ${data.server}:${data.port}/${data.path}, available cities count ${data.cityNames.length}`);
+	data.cities = getCities(cityList, "US");
+	//console.log(data.cities);
+	console.log(`Endpoint ${data.server}:${data.port}/${data.path}, available cities count ${data.cities.length}`);
 	return data;
 }
 
@@ -35,10 +39,11 @@ export default function weather(data) {
 			data.index++;
 		}
 	}
-	let city = data.cityNames[data.index];
+	let city = data.cities[data.index].name;
+	let cityId = data.cities[data.index].cityId;
 	//console.log(`VU ${__VU}, index ${data.index}, city ${city}`);
 
-	let url = `http://${data.server}:${data.port}/${data.path}?city=${encodeURIComponent(city)}&fake=0`;
+	let url = `http://${data.server}:${data.port}/${data.path}?cityId=${cityId}&fake=0&city=${encodeURIComponent(city)}`;
 	let expectedStatus = 200;
 	let r = http.post(url);
 	if (r.status != expectedStatus) {

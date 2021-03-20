@@ -31,7 +31,11 @@ export function getCities(cityList, countryCode) {
 	let cities = [];
 	cityList.forEach(city => {
 		if (city.country == countryCode) {
-			cities.push(city.name);
+		    let entry = {
+		        name: city.name,
+		        cityId: city.id,
+		    };
+			cities.push(entry);
 		}
 	});
 	return cities;
