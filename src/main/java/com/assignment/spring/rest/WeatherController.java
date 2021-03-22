@@ -42,9 +42,9 @@ public class WeatherController {
         Callable<ResponseEntity<RestWeatherResponse>> task = () -> {
             String methodName = "weather";
 
-            LOG.info("{}: city <{}>", methodName, city);
-            if (city == null) {
-                return buildFailureResponse(HttpStatus.BAD_REQUEST, "Missing mandatory request parameter 'city'");
+            LOG.info("{}: cityId <{}>", methodName, cityId);
+            if (cityId == null) {
+                return buildFailureResponse(HttpStatus.BAD_REQUEST, "Missing mandatory request parameter 'cityId'");
             }
 
             ResponseEntity<ApiResponseWeather> apiResponse;
